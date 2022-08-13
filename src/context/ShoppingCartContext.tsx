@@ -1,6 +1,12 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { ShoppingCart } from "../components/ShoppingCart";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+
+type storeItem = {
+  id: number
+  name: string
+  price: number
+}
 
 type ShoppingCartProviderProps = {
   children: ReactNode;
@@ -11,7 +17,7 @@ type CartItem = {
   quantity: number;
 };
 
-type ShoppingCartContext = {
+type ShoppingCartContextProps = {
   openCart: () => void
   closeCart: () => void
   getItemQuantity: (id: number) => number;
@@ -20,15 +26,30 @@ type ShoppingCartContext = {
   removeFromCart: (id: number) => void;
   cartQuantity: number
   cartItems: CartItem[]
+  storeItems: storeItem[]
 };
 
-const ShoppingCartContext = createContext({} as ShoppingCartContext);
+const ShoppingCartContext = createContext({} as ShoppingCartContextProps);
 
 export function useShoppingCart() {
   return useContext(ShoppingCartContext);
 }
 
 export function ShoppingCartProvider({ children }: ShoppingCartProviderProps) {
+
+  const url:string = 'http://localhost:4000/product'
+
+  const [storeItems, setStoreItems] = useState<storeItem[]>([])
+
+  const fetchApi = async () => {
+    const response = await fetch(url)
+    const responseJSON = await response.json()
+    setStoreItems(responseJSON as storeItem[])
+  }
+
+  useEffect(() => {
+    fetchApi()
+  }, [])
 
   const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useLocalStorage<CartItem[]>("shopping-cart", []);
@@ -93,7 +114,8 @@ export function ShoppingCartProvider({ children }: ShoppingCartProviderProps) {
         decreaseCartQuantity,
         removeFromCart,
         cartQuantity,
-        cartItems
+        cartItems,
+        storeItems
       }}
     >
       {children}

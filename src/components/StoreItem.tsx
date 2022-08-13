@@ -6,10 +6,9 @@ type StoreItemProps = {
   id: number;
   name: string;
   price: number;
-  imgUrl: string;
 };
 
-export function StoreItem({ id, name, price, imgUrl }: StoreItemProps) {
+export function StoreItem({ id, name, price }: StoreItemProps) {
   const {
     getItemQuantity,
     increaseCartQuantity,
@@ -21,14 +20,6 @@ export function StoreItem({ id, name, price, imgUrl }: StoreItemProps) {
 
   return (
     <Card className="h-100">
-      <Card.Img
-        variant="top"
-        src={imgUrl}
-        height="200px"
-        style={{
-          objectFit: "cover",
-        }}
-      />
       <Card.Body className="d-flex flex-column">
         <Card.Title
           className="
